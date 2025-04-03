@@ -1,0 +1,1 @@
+TIMEOUT_2MIN = 60 * 2
