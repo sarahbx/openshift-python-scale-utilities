@@ -66,6 +66,44 @@ with ThreadedScaleResources(resources=vms):
 monitor_api_requests.wait_for_idle()
 
 ```
+## ocp_scale_utilities.logger
+
+Logging at scale requires utilizing logging.QueueHandlers to avoid logging to closed streams.
+
+```
+ root QueueHandler ┐                         ┌> StreamHandler
+                   ├> Queue -> QueueListener ┤
+basic QueueHandler ┘                         └> FileHandler
+```
+
+### Usage
+`main.py`
+```
+import logging
+from ocp_scale_utilities.logger import setup_logging
+
+from module import func
+
+LOGGER = None
+
+def main():
+    LOGGER.warning("main logged warning message")
+    func()
+
+if __name__ == "__main__":
+    log_listener = setup_logging(log_level=logging.WARNING, log_file="/tmp/example.log")
+    LOGGER = logging.getLogger(__name__)
+    main()
+    log_listener.stop()
+```
+`module.py`
+```
+import logging
+LOGGER = logging.getLogger(__name__)
+
+def func():
+    LOGGER.warning("func logged warning message")
+```
 
 ## Contributing
 

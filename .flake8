@@ -60,6 +60,7 @@ fcn_exclude_functions =
     filecmp,
     datetime,
     subprocess,
+    QueueListener,
 
 enable-extensions =
     FCN,
