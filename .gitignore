@@ -4,3 +4,4 @@
 .mypy_cache
 .ruff_cache
 dist
+__pycache__

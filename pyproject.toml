@@ -64,6 +64,17 @@ dependencies = [
   "openshift-python-utilities>=6.0.0",
 ]
 
+  [[project.authors]]
+  name = "Sarah Bennert"
+
+  [[project.maintainers]]
+  name = "Sarah Bennert"
+
+  [project.urls]
+  homepage = "https://github.com/sarahbx/openshift-python-scale-utilities"
+  Download = "https://pypi.org/project/openshift-python-scale-utilities/"
+  "Bug Tracker" = "https://github.com/sarahbx/openshift-python-scale-utilities/issues"
+
 
 [build-system]
 requires = ["hatchling"]
