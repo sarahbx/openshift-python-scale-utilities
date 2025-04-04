@@ -8,6 +8,7 @@ addopts = [
   "--cov-config=pyproject.toml",
   "--cov-report=html",
   "--cov-report=term",
+  "--cov=ocp_scale_utilities.logger",
   "--cov=ocp_scale_utilities.monitoring",
   "--cov=ocp_scale_utilities.threaded.scale",
   "--cov=ocp_scale_utilities.threaded.utils",
