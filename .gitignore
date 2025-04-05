@@ -5,3 +5,5 @@
 .ruff_cache
 dist
 __pycache__
+.tests_coverage
+.pytest_cache

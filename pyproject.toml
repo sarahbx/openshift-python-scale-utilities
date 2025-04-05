@@ -20,7 +20,7 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 45
+fail_under = 90
 skip_empty = true
 
 [tool.coverage.html]
@@ -59,23 +59,26 @@ classifiers = [
   "Operating System :: OS Independent"
 ]
 dependencies = [
-  "pytest>=8.3.3",
-  "timeout-sampler>=1.0.1",
   "openshift-python-wrapper~=11.0.10",
   "openshift-python-utilities>=6.0.0",
+  "pytest>=8.3.3",
+  "pytest-order>=1.3.0",
   "python-simple-logger~=2.0.9",
+  "timeout-sampler>=1.0.1",
 ]
 
   [[project.authors]]
   name = "Sarah Bennert"
+  email = "sarahbx@redhat.com"
 
   [[project.maintainers]]
   name = "Sarah Bennert"
+  email = "sarahbx@redhat.com"
 
   [project.urls]
-  homepage = "https://github.com/sarahbx/openshift-python-scale-utilities"
+  homepage = "https://github.com/RedHatQE/openshift-python-scale-utilities"
   Download = "https://pypi.org/project/openshift-python-scale-utilities/"
-  "Bug Tracker" = "https://github.com/sarahbx/openshift-python-scale-utilities/issues"
+  "Bug Tracker" = "https://github.com/RedHatQE/openshift-python-scale-utilities/issues"
 
 
 [build-system]

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import sys
 import shlex
@@ -31,3 +32,9 @@ def bash(
             return proc.returncode, proc.stdout.read(), proc.stderr.read()
         else:
             return proc.returncode, None, None
+
+
+def get_crc_status(crc_dir: str) -> dict:
+    return_code, stdout, stderr = bash(command="./crc status -o json", cwd=crc_dir, capture=True)
+    assert not return_code, f"Error getting CRC status: {stderr}"
+    return json.loads(stdout)
