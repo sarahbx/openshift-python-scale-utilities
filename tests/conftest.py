@@ -1,80 +1,14 @@
 import kubernetes
-import logging
 import os
 import pytest
 import re
 from copy import deepcopy
 from pathlib import Path
 
-from urllib3.exceptions import MaxRetryError
-
 from ocp_resources.namespace import Namespace
 
-# from ocp_resources.resource import get_client
+from ocp_resources.resource import get_client
 from tests.utils import bash, get_crc_status
-
-
-LOGGER = logging.getLogger(__name__)
-
-
-def get_client(
-    config_file="",
-    config_dict=None,
-    context="",
-    **kwargs,
-):
-    """
-    TODO: Remove after https://github.com/RedHatQE/openshift-python-wrapper/pull/2371 has been released
-    """
-    # Ref: https://github.com/kubernetes-client/python/blob/v26.1.0/kubernetes/base/config/kube_config.py
-    if config_dict:
-        return kubernetes.dynamic.DynamicClient(
-            client=kubernetes.config.new_client_from_config_dict(
-                config_dict=config_dict, context=context or None, **kwargs
-            )
-        )
-    client_configuration = kwargs.get("client_configuration", kubernetes.client.Configuration())
-    try:
-        # Ref: https://github.com/kubernetes-client/python/blob/v26.1.0/kubernetes/base/config/__init__.py
-        LOGGER.info("Trying to get client via new_client_from_config")
-
-        # kubernetes.config.kube_config.load_kube_config sets KUBE_CONFIG_DEFAULT_LOCATION during module import.
-        # If `KUBECONFIG` environment variable is set via code, the `KUBE_CONFIG_DEFAULT_LOCATION` will be None since
-        # is populated during import which comes before setting the variable in code.
-        config_file = config_file or os.environ.get("KUBECONFIG", "~/.kube/config")
-
-        if os.environ.get("OPENSHIFT_PYTHON_WRAPPER_CLIENT_USE_PROXY"):
-            proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("HTTP_PROXY")
-            if not proxy:
-                raise ValueError(
-                    "Proxy configuration is enabled but neither "
-                    "HTTPS_PROXY nor HTTP_PROXY environment variables are set."
-                )
-            if client_configuration.proxy and client_configuration.proxy != proxy:
-                raise ValueError(
-                    f"Conflicting proxy settings: client_configuration.proxy={client_configuration.proxy}, "
-                    f"but the environment variable 'HTTPS_PROXY/HTTP_PROXY' defines proxy as {proxy}."
-                )
-            client_configuration.proxy = proxy
-
-        kwargs["client_configuration"] = client_configuration
-
-        return kubernetes.dynamic.DynamicClient(
-            client=kubernetes.config.new_client_from_config(
-                config_file=config_file,
-                context=context or None,
-                **kwargs,
-            )
-        )
-    except MaxRetryError:
-        # Ref: https://github.com/kubernetes-client/python/blob/v26.1.0/kubernetes/base/config/incluster_config.py
-        LOGGER.info("Trying to get client via incluster_config")
-        return kubernetes.dynamic.DynamicClient(
-            client=kubernetes.config.incluster_config.load_incluster_config(
-                client_configuration=client_configuration,
-                try_refresh_token=kwargs.get("try_refresh_token", True),
-            )
-        )
 
 
 @pytest.fixture(scope="session")
