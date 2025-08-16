@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from ocp_resources.resource import Resource
 
@@ -12,7 +12,7 @@ from ocp_scale_utilities.constants import TIMEOUT_2MIN
 LOGGER = logging.getLogger(__name__)
 
 
-def threaded_clean_up_resources(resources: list[Resource]) -> list[Any]:
+def threaded_clean_up_resources(resources: Sequence[Resource]) -> list[Any]:
     """
     Call clean_up() for multiple resources via threads
 
@@ -26,7 +26,7 @@ def threaded_clean_up_resources(resources: list[Resource]) -> list[Any]:
         return list(executor.map(lambda x: x.clean_up(), resources))
 
 
-def threaded_delete_resources(resources: list[Resource]) -> list[Any]:
+def threaded_delete_resources(resources: Sequence[Resource]) -> list[Any]:
     """
     Call delete() for multiple resources via threads
 
@@ -40,7 +40,7 @@ def threaded_delete_resources(resources: list[Resource]) -> list[Any]:
         return list(executor.map(lambda x: x.delete(), resources))
 
 
-def threaded_wait_deleted_resources(resources: list[Resource]) -> list[Any]:
+def threaded_wait_deleted_resources(resources: Sequence[Resource]) -> list[Any]:
     """
     Call wait_deleted() for multiple resources via threads
 
@@ -55,7 +55,7 @@ def threaded_wait_deleted_resources(resources: list[Resource]) -> list[Any]:
 
 
 def threaded_deploy_requested_resources(
-    resources: list[Resource], request_resources: list[Resource], exit_stack: Optional[ExitStack] = None
+    resources: Sequence[Resource], request_resources: Sequence[Resource], exit_stack: Optional[ExitStack] = None
 ) -> list[Any]:
     """
     Deploy multiple resources via threads
@@ -81,7 +81,7 @@ def threaded_deploy_requested_resources(
         return list(executor.map(_deploy, zip(request_resources, resources)))
 
 
-def threaded_deploy_resources(resources: list[Resource], exit_stack: Optional[ExitStack] = None) -> list[Any]:
+def threaded_deploy_resources(resources: Sequence[Resource], exit_stack: Optional[ExitStack] = None) -> list[Any]:
     """
     Deploy multiple resources via threads
 
@@ -104,14 +104,14 @@ def threaded_deploy_resources(resources: list[Resource], exit_stack: Optional[Ex
 
 
 def threaded_wait_for_resources_status(
-    resources: list[Resource], status: Resource.Status, timeout: int = TIMEOUT_2MIN
+    resources: Sequence[Resource], status: str, timeout: int = TIMEOUT_2MIN
 ) -> list[Any]:
     """
     Wait for multiple resources to to reach status via threads
 
     Args:
         resources (list): List of Resources
-        status: (Resource.Status): Status to wait for
+        status: (str): Status to wait for
         timeout: (int): Length of time for each thread to wait for resource to reach status
 
     Returns:
