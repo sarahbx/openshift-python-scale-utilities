@@ -5,3 +5,4 @@ env_list = ["unittests"]
 description = "Run unittests"
 deps = ["uv"]
 commands = [["uv", "run", "pytest"]]
+passenv = ["CRC_PATH"]

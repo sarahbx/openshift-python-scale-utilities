@@ -1,20 +1,16 @@
 # Running Tests
 
-## Pre-configuration
+## Setup uv
+https://github.com/astral-sh/uv
 
-### Existing Running Cluster (CRC or otherwise)
-Simply set the KUBECONFIG environment variable
-```
-export KUBECONFIG=...
-```
+## OpenShift Local (CRC)
 
-### OpenShift Local (CRC)
-
-#### Download CRC
+### Download CRC
 https://console.redhat.com/openshift/create/local
 
-#### Setup CRC
+### Setup CRC
 https://crc.dev/docs/installing/
+
 https://crc.dev/docs/configuring/
 
 Example setup:
@@ -27,16 +23,15 @@ Example setup:
 ./crc setup
 ```
 
-#### Set ENV vars to provide necessary paths to pytest
+### Set ENV vars to provide necessary paths to pytest
 
-If you wish to use a running CRC cluster set the KUBECONFIG path only
-```
-unset CRC_PATH
-export KUBECONFIG=~/.crc/machines/crc/kubeconfig
-```
-
-If you want the test automation to start and stop CRC, set the CRC_PATH only
+Set CRC_PATH only. If CRC is already running, will use it, otherwise will start/stop CRC.
 ```
 unset KUBECONFIG
 export CRC_PATH=~/openshift-local/crc-linux-2.49.0-amd64/crc
+```
+
+## Run tests
+```
+uv run pytest tests
 ```

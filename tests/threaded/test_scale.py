@@ -4,12 +4,12 @@ from ocp_scale_utilities.threaded.scale import ThreadedScaleResources
 
 
 @pytest.fixture()
-def scaled_pods(admin_client, namespace):
+def scaled_pods(crc_admin_client, namespace):
     pods = [
         Pod(
             name=f"test-pod-{index}",
             namespace=namespace.name,
-            client=admin_client,
+            client=crc_admin_client,
             containers=[
                 dict(
                     name="pause",

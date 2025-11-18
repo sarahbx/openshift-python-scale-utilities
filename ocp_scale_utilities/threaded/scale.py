@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 from contextlib import ExitStack, contextmanager
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import pytest
 from ocp_resources.resource import Resource
@@ -19,18 +19,18 @@ from ocp_scale_utilities.threaded.utils import (
 class ThreadedScaleResources(ExitStack):
     def __init__(
         self,
-        resources: list[Resource],
-        request_resources: Optional[list[Resource]] = None,
+        resources: Sequence[Resource],
+        request_resources: Optional[Sequence[Resource]] = None,
         pytest_cache: Optional[pytest.Cache] = None,
         cache_key_prefix: Optional[str] = None,
-        wait_for_status: Optional[Resource.Status] = None,
+        wait_for_status: Optional[str] = None,
     ):
         """
         Args:
-            resources (list): List of Resource objects to be managed
+            resources (Sequence): List of Resource objects to be managed
             pytest_cache (pytest.Cache): config.cache from python run to store results in
             cache_key_prefix (str): prefix to use for cache_keys
-            wait_for_status (Resource.Status): Wait for provided status upon deploy
+            wait_for_status (str): Wait for provided status upon deploy
         """
         super().__init__()
         self.resources = resources
@@ -61,6 +61,7 @@ class ThreadedScaleResources(ExitStack):
 
             stop_time = time.time()
             if self.pytest_cache and self.cache_key_prefix:
+                self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-count", len(self.resources))
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-start", start_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-stop", stop_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-elapsed", stop_time - start_time)
