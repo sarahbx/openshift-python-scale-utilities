@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 from contextlib import ExitStack, contextmanager
 from typing import Any, Optional, Sequence
@@ -14,6 +15,8 @@ from ocp_scale_utilities.threaded.utils import (
     threaded_wait_deleted_resources,
     threaded_wait_for_resources_status,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ThreadedScaleResources(ExitStack):
@@ -39,11 +42,14 @@ class ThreadedScaleResources(ExitStack):
         self.cache_key_prefix = cache_key_prefix
         self.wait_for_status = wait_for_status
 
+        self.collect_data_start_time = time.time()
+
     @contextmanager
     def _cleanup_on_error(self, stack_exit):
         with ExitStack() as stack:
             stack.push(exit=stack_exit)
             yield
+            self.collect_data(id="cleanup-on-error", start_time=self.collect_data_start_time)
             stack.pop_all()
 
     def __enter__(self) -> ThreadedScaleResources:
@@ -59,12 +65,15 @@ class ThreadedScaleResources(ExitStack):
             if self.wait_for_status:
                 threaded_wait_for_resources_status(resources=self.resources, status=self.wait_for_status)
 
-            stop_time = time.time()
+            self.collect_data_start_time = stop_time = time.time()
             if self.pytest_cache and self.cache_key_prefix:
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-count", len(self.resources))
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-start", start_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-stop", stop_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-deploy-elapsed", stop_time - start_time)
+
+            self.collect_data(id="post-enter", start_time=start_time)
+
         return self
 
     def __exit__(self: ThreadedScaleResources, *exc_arguments: Any) -> Any:
@@ -75,6 +84,7 @@ class ThreadedScaleResources(ExitStack):
         Wait for resources to be deleted in reverse order of creation.
         """
         with self._cleanup_on_error(stack_exit=super().__exit__):
+            self.collect_data(id="pre-exit", start_time=self.collect_data_start_time)
             start_time = time.time()
             threaded_delete_resources(resources=self.resources)
             threaded_wait_deleted_resources(resources=self.resources)
@@ -83,3 +93,11 @@ class ThreadedScaleResources(ExitStack):
                 self.pytest_cache.set(f"{self.cache_key_prefix}-delete-start", start_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-delete-stop", stop_time)
                 self.pytest_cache.set(f"{self.cache_key_prefix}-delete-elapsed", stop_time - start_time)
+
+    def collect_data(self, id: str, start_time: float):
+        # Placeholder to be defined by child classes for any data collection required
+        #
+        # Args:
+        #    id (str): A string to be utilized to identify where the call occured
+        #    start_time (float): Beginning time to collect data from
+        LOGGER.warning("No data collected. collect_data() should be defined by child classes")
