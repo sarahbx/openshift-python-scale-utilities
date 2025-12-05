@@ -559,7 +559,7 @@ wheels = [
 
 [[package]]
 name = "openshift-python-scale-utilities"
-version = "0.1.1.5"
+version = "0.1.2.0"
 source = { editable = "." }
 dependencies = [
     { name = "openshift-python-utilities" },
